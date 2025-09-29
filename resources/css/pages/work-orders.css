@@ -1,0 +1,53 @@
+/* Basic Work Orders Styling */
+
+.work-orders-container {
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.work-orders-card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.work-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.work-orders-table th,
+.work-orders-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.work-orders-table th {
+    background-color: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+}
+
+.btn-action {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-right: 0.25rem;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-success {
+    background-color: #10b981;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+}

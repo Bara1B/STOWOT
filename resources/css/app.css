@@ -1,0 +1,101 @@
+/* Laravel 8 Compatible CSS */
+@import './tw.css';
+@import './sidebar.css';
+@import './layouts-app.css';
+@import './login-clean.css';
+@import './public-home.css';
+@import './pages/dashboard.css';
+@import './pages/stock-opname-index.css';
+@import './pages/stock-opname-laravel12.css';
+@import './tracking-enhanced.css';
+@import './tracking-icons-fix.css';
+@import './pages/tracking.css';
+@import './pages/stock-opname-upload.css';
+@import './pages/overmate-show.css';
+@import './pages/overmate-index.css';
+@import './pages/overmate-modern.css';
+@import './pages/overmate-clean.css';
+@import './pages/overmate-form-clean.css';
+@import './pages/work-order-data-clean.css';
+@import './user-home.css';
+@import './pages/admin-data_master.css';
+@import './pages/work-orders.css';
+@import './pages/user-tracking.css';
+@import './pages/tracking-show.css';
+@import './dashboard-bulk-actions.css';
+
+/* Force all content to be visible - no problematic animations */
+* {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Override any fade animations that might cause blank pages */
+.fade-in,
+.fade-in-left,
+.fade-in-right,
+.fade-in-up,
+.fade-in-scale,
+.initial-fade-in,
+.initial-fade-in-left,
+.initial-fade-in-right,
+.initial-fade-in-scale,
+.initial-fade-in-up {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* Additional styles for Laravel 12 layout compatibility */
+.stat-card {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: white;
+}
+
+.stat-icon.bg-primary { background-color: #3b82f6; }
+.stat-icon.bg-info { background-color: #06b6d4; }
+.stat-icon.bg-success { background-color: #10b981; }
+.stat-icon.bg-warning { background-color: #f59e0b; }
+.stat-icon.bg-purple { background-color: #8b5cf6; }
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+}
+
+.card-icon {
+    opacity: 0.7;
+}

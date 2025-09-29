@@ -1,0 +1,184 @@
+/* Dashboard Bulk Actions Styling */
+
+#bulk-actions-toolbar {
+    transition: all 0.3s ease-in-out;
+    display: block;
+    visibility: visible;
+    opacity: 1;
+}
+
+#bulk-actions-toolbar.hidden {
+    display: none !important;
+}
+
+/* Force visibility when not hidden */
+#bulk-actions-toolbar:not(.hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Bulk actions container */
+.bg-gradient-to-r {
+    background: linear-gradient(to right, #eff6ff, #e0e7ff);
+}
+
+.border-blue-200 {
+    border-color: #bfdbfe;
+}
+
+.rounded-xl {
+    border-radius: 0.75rem;
+}
+
+/* Modern checkbox styling */
+.row-checkbox,
+#select-all {
+    cursor: pointer;
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Bulk actions buttons */
+.bulk-action-btn {
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.bulk-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Button colors */
+.bg-amber-500 {
+    background-color: #f59e0b;
+}
+
+.bg-amber-500:hover,
+.hover\:bg-amber-600:hover {
+    background-color: #d97706;
+}
+
+.bg-red-500 {
+    background-color: #ef4444;
+}
+
+.bg-red-500:hover,
+.hover\:bg-red-600:hover {
+    background-color: #dc2626;
+}
+
+.bg-emerald-500 {
+    background-color: #10b981;
+}
+
+.bg-emerald-500:hover,
+.hover\:bg-emerald-600:hover {
+    background-color: #059669;
+}
+
+/* Text colors */
+.text-blue-600 {
+    color: #2563eb;
+}
+
+.text-blue-800 {
+    color: #1e40af;
+}
+
+.text-white {
+    color: white;
+}
+
+/* Flexbox utilities */
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.gap-3 {
+    gap: 0.75rem;
+}
+
+/* Spacing */
+.mb-3 {
+    margin-bottom: 0.75rem;
+}
+
+.mr-2 {
+    margin-right: 0.5rem;
+}
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+/* Table row selection highlight */
+tr:has(.row-checkbox:checked) {
+    background-color: #f0f9ff !important;
+}
+
+/* Modal styling */
+.tw-modal {
+    backdrop-filter: blur(4px);
+}
+
+.tw-modal.hidden {
+    display: none;
+}
+
+/* SVG icons */
+.w-4 {
+    width: 1rem;
+}
+
+.h-4 {
+    height: 1rem;
+}
+
+.w-5 {
+    width: 1.25rem;
+}
+
+.h-5 {
+    height: 1.25rem;
+}
+
+/* Basic responsive */
+@media (max-width: 768px) {
+    #bulk-actions-toolbar .flex {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .bulk-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

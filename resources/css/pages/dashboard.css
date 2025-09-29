@@ -1,0 +1,36 @@
+/* Dashboard scoped overrides */
+#dashboard-wo th a {
+    text-decoration: none !important;
+    color: #111827 !important; /* gray-900 */
+}
+#dashboard-wo th a:hover {
+    text-decoration: none !important;
+    color: #111827 !important;
+}
+#dashboard-wo a.no-underline {
+    text-decoration: none !important;
+}
+/* Force pill radius for action buttons within dashboard */
+#dashboard-wo #actions-toolbar button,
+#dashboard-wo #actions-toolbar a,
+#dashboard-wo #bulk-actions-toolbar button,
+#dashboard-wo #bulk-actions-toolbar a,
+#exportModal .border-t button,
+#editDueDateModal .border-t button {
+    border-radius: 9999px !important;
+}
+
+/* Ensure filter panel buttons (Reset/Filter) are pill-shaped and consistent across browsers */
+#dashboard-wo .p-4.mb-6 button,
+#dashboard-wo .p-4.mb-6 a {
+    border-radius: 9999px !important; /* pill */
+}
+
+/* Normalize Safari default button rendering in filter panel */
+#dashboard-wo .p-4.mb-6 button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.25rem; /* match leading-5 */
+}
