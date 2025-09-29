@@ -41,7 +41,7 @@
                         <a href="{{ route('admin.home') }}"
                             class="menu-link {{ $currentRoute === 'admin.home' ? 'active' : '' }}">
                             <i class="fas fa-home menu-icon"></i>
-                            <span class="menu-text">Dashboard</span>
+                            <span class="menu-text">Home</span>
                         </a>
                     </li>
                     <li class="menu-item">

@@ -32,7 +32,8 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        Paginator::useBootstrap();
+        // Use Tailwind-styled pagination views globally
+        Paginator::useTailwind();
 
         // Provide a Laravel 8-compatible @vite directive
         Blade::directive('vite', function ($expression) {

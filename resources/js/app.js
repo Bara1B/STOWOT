@@ -2,6 +2,7 @@ import './bootstrap';
 import './scroll-animations';
 import './notifications';
 import './admin-sidebar';
+import './confirmations';
 import { Chart, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Filler, RadialLinearScale, RadarController, LineController, BarController, DoughnutController } from 'chart.js';
 
 Chart.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Filler, RadialLinearScale, RadarController, LineController, BarController, DoughnutController);

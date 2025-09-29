@@ -152,6 +152,33 @@
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Tabel Data Stock Opname</h3>
                     </div>
+                    <!-- Filters Toolbar -->
+                    <div class="px-6 py-4 border-b border-gray-100 bg-white">
+                        @php
+                            $showDataRoute = Auth::user() && Auth::user()->role === 'admin'
+                                ? route('admin.stock-opname.show-data', $stockOpnameFile->id)
+                                : route('stock-opname.show-data', $stockOpnameFile->id);
+                        @endphp
+                        <form method="GET" action="{{ $showDataRoute }}" class="flex flex-col md:flex-row md:items-center gap-3">
+                            <div class="relative w-full md:w-96">
+                                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10.5A6.5 6.5 0 114 10.5a6.5 6.5 0 0113 0z" />
+                                </svg>
+                                <input name="q" value="{{ request('q') }}" type="text" placeholder="Cari (location, item, description, lot, reference)" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    Cari
+                                </button>
+                                @if(request()->filled('q'))
+                                    <a href="{{ $showDataRoute }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg">Reset</a>
+                                @endif
+                            </div>
+                            <div class="text-sm text-gray-600 md:ml-auto">
+                                <span>{{ method_exists($stockOpnames, 'total') ? $stockOpnames->total() : $stockOpnames->count() }}</span> baris
+                            </div>
+                        </form>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -343,6 +370,17 @@
                                                 History
                                             </button>
                                         </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                            @if (Auth::user() && Auth::user()->role === 'admin')
+                                                <form action="{{ route('admin.stock-opname.row.destroy', $item->id) }}" method="POST" data-confirm="Hapus baris ini?" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors duration-200">
+                                                        Hapus
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -352,7 +390,7 @@
                     <!-- Pagination -->
                     @if(method_exists($stockOpnames, 'links'))
                         <div class="px-6 py-4 border-t border-gray-200">
-                            {{ $stockOpnames->links() }}
+                            {{ $stockOpnames->onEachSide(1)->links('pagination::tailwind') }}
                         </div>
                     @endif
                 </div>
@@ -481,5 +519,74 @@
             var m = document.getElementById('addRowModal');
             if (m) m.classList.add('hidden');
         }
+
+        // Client-side search & filters for the table
+        (function () {
+            var searchInput = document.getElementById('soSearchInput');
+            var statusFilter = document.getElementById('soStatusFilter');
+            var locFilter = document.getElementById('soLocFilter');
+            var resultCount = document.getElementById('soResultCount');
+
+            function getLocStatusFromRow(row) {
+                // Admin view may have a select element
+                var sel = row.querySelector('select[name="location_actual_status"]');
+                if (sel) {
+                    return sel.value || 'empty';
+                }
+                // Non-admin badges/text
+                var cell = row.cells && row.cells[1];
+                if (!cell) return 'empty';
+                var t = cell.innerText || '';
+                if (t.includes('✓')) return 'centang';
+                if (t.includes('✗')) return 'x';
+                return 'empty';
+            }
+
+            function getMasukKategoriFromRow(row) {
+                var cell = row.cells && row.cells[12];
+                if (!cell) return '';
+                var t = (cell.innerText || '').toLowerCase();
+                if (t.includes('iya')) return 'iya';
+                if (t.includes('tidak')) return 'tidak';
+                return '';
+            }
+
+            function filterTable() {
+                var tbody = document.querySelector('table.min-w-full tbody');
+                if (!tbody) return;
+                var rows = tbody.querySelectorAll('tr');
+                var q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+                var statusVal = statusFilter ? statusFilter.value : 'all';
+                var locVal = locFilter ? locFilter.value : 'all';
+
+                var visible = 0;
+                rows.forEach(function (row) {
+                    var rowText = (row.innerText || '').toLowerCase();
+                    var matchSearch = q === '' || rowText.indexOf(q) !== -1;
+
+                    var mk = getMasukKategoriFromRow(row);
+                    var matchStatus = statusVal === 'all' || mk === statusVal;
+
+                    var ls = getLocStatusFromRow(row);
+                    var matchLoc = locVal === 'all' || ls === locVal;
+
+                    var show = matchSearch && matchStatus && matchLoc;
+                    row.style.display = show ? '' : 'none';
+                    if (show) visible++;
+                });
+                if (resultCount) resultCount.textContent = visible;
+            }
+
+            if (searchInput) searchInput.addEventListener('input', filterTable);
+            if (statusFilter) statusFilter.addEventListener('change', filterTable);
+            if (locFilter) locFilter.addEventListener('change', filterTable);
+            // Reset filters on load to prevent hidden rows after redirect
+            window.addEventListener('load', function() {
+                if (searchInput) searchInput.value = '';
+                if (statusFilter) statusFilter.value = 'all';
+                if (locFilter) locFilter.value = 'all';
+                filterTable();
+            });
+        })();
     </script>
 @endsection

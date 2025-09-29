@@ -1,0 +1,15 @@
+/* Notification component styles extracted from Blade */
+#notification { max-width: calc(100vw - 2rem); word-wrap: break-word; position: fixed !important; top: 7rem !important; right: 1rem !important; transform: translateX(0) !important; z-index: 9999 !important; transition: all 0.5s ease-out !important; will-change: transform, opacity; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important; }
+#notification * { transition: none !important; }
+#progress-bar { transition: width linear !important; }
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  #notification { top: 5rem !important; right: 1rem !important; left: 1rem !important; max-width: none; width: auto; }
+}
+
+/* Ensure notification is above navbar */
+.top-navbar { z-index: 60 !important; }
+
+/* Smooth scroll baseline for the page (kept as before) */
+body { scroll-behavior: smooth; }

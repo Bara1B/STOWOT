@@ -22,7 +22,8 @@
   width: 100% !important;
   gap: 0 !important;
   padding: 24px 0 !important;
-  flex-wrap: nowrap !important; /* prevent breaking to next line */
+  flex-wrap: nowrap !important;
+  /* prevent breaking to next line */
   overflow-x: auto !important;
 }
 
@@ -32,7 +33,8 @@
   flex-direction: column !important;
   align-items: center !important;
   position: relative !important;
-  min-width: 80px !important; /* keep width so steps line up */
+  min-width: 80px !important;
+  /* keep width so steps line up */
   margin: 0 6px !important;
   text-align: center !important;
   flex-shrink: 0 !important;
@@ -72,21 +74,44 @@
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  /* icon height */
-  padding: 0 0;
-  /* add 4px gap at both ends so line doesn't touch icons */
+  /* icon row container; dots are 48px (w-12 h-12) */
+  padding: 0 20px; /* sync with track-line left/right */
+  /* keep line inside the card, not touching edges */
+}
+
+/* Hide line overflow near the first/last icons for a neat stop under the centers */
+.icons-row::before,
+.icons-row::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  height: 64px;
+  /* same as row */
+  width: 24px;
+  /* equal to icon radius so line stops at centers */
+  background: #ffffff;
+  /* card background */
+  z-index: 2;
+  /* above line (1), below dots (z-10) */
+}
+
+.icons-row::before {
+  left: 0;
+}
+
+.icons-row::after {
+  right: 0;
 }
 
 /* Base line (gray) and progress line (blue) centered at icon middle */
 .track-line {
   position: absolute;
-  left: 0;
-  /* match updated icons-row padding */
-  right: 0;
-  top: 14px;
-  /* 64px/2 - 3px/2 rounded up for optical centering */
-  height: 3px;
-  /* slimmer line for cleaner look */
+  left: 20px;
+  /* match icons-row padding */
+  right: 20px;
+  top: 10px;
+  /* center at 48px/2 minus half of line height (6/2=3): 24-3=21 */
+  height: 6px;
   background: #e5e7eb;
   border-radius: 9999px;
   z-index: 1;
@@ -94,11 +119,12 @@
 
 .track-line-progress {
   position: absolute;
-  left: 0;
-  top: 14px;
-  /* match track-line vertical center */
-  height: 3px;
-  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  left: 20px;
+  /* match icons-row padding */
+  top: 10px;
+  /* align with track-line */
+  height: 6px;
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
   border-radius: 9999px;
   z-index: 1;
   overflow: hidden;
@@ -115,11 +141,36 @@
   /* prevent overflow on very small widths */
 }
 
+/* Icon circle styling (applied in Blade via class 'step-dot') */
+.step-dot {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 2px solid #e5e7eb;
+}
+
+/* State variants */
+.step-dot.is-pending {
+  background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-color: #d1d5db;
+  color: #9ca3af;
+}
+
+.step-dot.is-current {
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.step-dot.is-done {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  border-color: #16a34a;
+  color: #ffffff;
+}
+
 .step-label {
   /* normalize label height so all nodes align */
-  min-height: 32px;
+  min-height: 34px;
   /* ~2 lines */
-  max-width: 72px;
+  max-width: 84px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -133,8 +184,8 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -40%;
-  width: 40%;
+  left: -35%;
+  width: 35%;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .45), rgba(255, 255, 255, 0));
   filter: blur(2px);
   animation: shimmer 2.2s linear infinite;

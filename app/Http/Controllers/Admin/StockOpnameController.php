@@ -11,6 +11,10 @@ use App\Imports\StockOpnameImport;
 use App\Exports\StockOpnameTemplateExport;
 use App\Exports\StockOpnameFilledExport;
 use Illuminate\Http\Request;
+use App\Http\Requests\StockOpnameImportRequest;
+use App\Http\Requests\StockOpnameUpdateStokRequest;
+use App\Http\Requests\StockOpnameUpdateLotSerialRequest;
+use App\Http\Requests\StockOpnameUpdateLocationActualRequest;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -77,18 +81,16 @@ class StockOpnameController extends Controller
     /**
      * Update lot serial for a specific item.
      */
-    public function updateLotSerial(Request $request, $id)
+    public function updateLotSerial(StockOpnameUpdateLotSerialRequest $request, $id)
     {
-        $request->validate([
-            'lot_serial' => 'nullable|string|max:100',
-        ]);
+        $validated = $request->validated();
 
         try {
             $stockOpname = StockOpname::findOrFail($id);
             $old = $stockOpname->lot_serial;
 
             $stockOpname->update([
-                'lot_serial' => $request->lot_serial,
+                'lot_serial' => $validated['lot_serial'] ?? null,
             ]);
 
             // optional: record history if needed later
@@ -104,7 +106,7 @@ class StockOpnameController extends Controller
     /**
      * Menampilkan data stock opname untuk file tertentu.
      */
-    public function showData($fileId)
+    public function showData(Request $request, $fileId)
     {
         $stockOpnameFile = StockOpnameFile::findOrFail($fileId);
 
@@ -123,8 +125,24 @@ class StockOpnameController extends Controller
                 DB::raw('CASE WHEN (COALESCE(so.stok_fisik, 0) - COALESCE(so.quantity_on_hand, 0)) > COALESCE(omm.overmate, om.overmate_qty, 0) THEN "Tidak" ELSE "Iya" END as masuk_kategori')
             )
             ->where('so.file_id', $fileId)
-            ->orderBy('so.created_at', 'desc')
-            ->paginate(15);
+            ->when($request->filled('q'), function ($query) use ($request) {
+                $q = trim($request->get('q'));
+                $query->where(function ($qq) use ($q) {
+                    $like = '%' . $q . '%';
+                    $qq->where('so.location_system', 'like', $like)
+                       ->orWhere('so.item_number', 'like', $like)
+                       ->orWhere('so.description', 'like', $like)
+                       ->orWhere('so.manufacturer', 'like', $like)
+                       ->orWhere('so.lot_serial', 'like', $like)
+                       ->orWhere('so.reference', 'like', $like);
+                });
+            })
+            // Sort by numeric part inside location_system (e.g., BBE0122 -> 122)
+            ->orderByRaw("CAST(REGEXP_REPLACE(so.location_system, '[^0-9]', '') AS UNSIGNED) asc")
+            ->orderBy('so.location_system', 'asc')
+            ->orderBy('so.id', 'asc')
+            ->paginate(15)
+            ->appends(['q' => $request->get('q')]);
 
         return view('stock_opname.data', compact('stockOpnames', 'stockOpnameFile'));
     }
@@ -141,11 +159,9 @@ class StockOpnameController extends Controller
     /**
      * Import data dari file Excel (.xlsx).
      */
-    public function import(Request $request)
+    public function import(StockOpnameImportRequest $request)
     {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls|max:10240', // Max 10MB
-        ]);
+        $validated = $request->validated();
 
         try {
             $file = $request->file('file');
@@ -208,22 +224,20 @@ class StockOpnameController extends Controller
     /**
      * Update stok fisik untuk item tertentu.
      */
-    public function updateStokFisik(Request $request, $id)
+    public function updateStokFisik(StockOpnameUpdateStokRequest $request, $id)
     {
-        $request->validate([
-            'stok_fisik' => 'required|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         try {
             $stockOpname = StockOpname::findOrFail($id);
             $oldValue = $stockOpname->stok_fisik;
             
             $stockOpname->update([
-                'stok_fisik' => $request->stok_fisik
+                'stok_fisik' => $validated['stok_fisik']
             ]);
 
             // Create history record
-            $this->createHistory($stockOpname, 'stok_fisik', $oldValue, $request->stok_fisik, 'update');
+            $this->createHistory($stockOpname, 'stok_fisik', $oldValue, $validated['stok_fisik'], 'update');
 
             NotificationHelper::updated('Stok fisik');
             return redirect()->back();
@@ -260,19 +274,16 @@ class StockOpnameController extends Controller
     /**
      * Update location actual status untuk item tertentu.
      */
-    public function updateLocationActual(Request $request, $id)
+    public function updateLocationActual(StockOpnameUpdateLocationActualRequest $request, $id)
     {
-        $request->validate([
-            'location_actual_status' => 'required|in:centang,x',
-            'location_actual_keterangan' => 'nullable|string|max:1000',
-        ]);
+        $validated = $request->validated();
 
         try {
             $stockOpname = StockOpname::findOrFail($id);
             
             $stockOpname->update([
-                'location_actual_status' => $request->location_actual_status,
-                'location_actual_keterangan' => $request->location_actual_status === 'x' ? $request->location_actual_keterangan : null
+                'location_actual_status' => $validated['location_actual_status'],
+                'location_actual_keterangan' => $validated['location_actual_status'] === 'x' ? ($validated['location_actual_keterangan'] ?? null) : null
             ]);
 
             NotificationHelper::updated('Location Actual');
@@ -361,6 +372,27 @@ class StockOpnameController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('admin.stock-opname.index')
                 ->with('error', 'Terjadi kesalahan saat hapus file: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete a single stock opname row (and its histories) by ID.
+     */
+    public function destroyRow($id)
+    {
+        try {
+            $row = StockOpname::findOrFail($id);
+            $fileId = $row->file_id;
+
+            // delete histories first
+            $row->histories()->delete();
+            // delete the row
+            $row->delete();
+
+            NotificationHelper::deleted('Baris stock opname');
+            return redirect()->route('admin.stock-opname.show-data', $fileId);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus baris: ' . $e->getMessage());
         }
     }
 }

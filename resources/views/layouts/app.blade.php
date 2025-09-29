@@ -25,6 +25,7 @@
 
 <body>
     <div id="app">
+        <x-confirm-modal />
         <!-- Global Loading Overlay -->
         <div id="global-loading"
             class="hidden fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm items-center justify-center">
@@ -79,7 +80,7 @@
                             <a href="{{ route('admin.home') }}"
                                 class="menu-item {{ request()->routeIs('admin.home') ? 'active' : '' }}">
                                 <i class="fas fa-home"></i>
-                                <span class="menu-text">Dashboard</span>
+                                <span class="menu-text">Home</span>
                             </a>
                             <a href="{{ route('dashboard') }}"
                                 class="menu-item {{ request()->routeIs('dashboard*') ? 'active' : '' }}">

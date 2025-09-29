@@ -171,6 +171,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::put('/stock-opname/update-lot-serial/{id}', [App\Http\Controllers\Admin\StockOpnameController::class, 'updateLotSerial'])->name('stock-opname.update-lot-serial');
         Route::put('/stock-opname/update-keterangan/{id}', [App\Http\Controllers\Admin\StockOpnameController::class, 'updateKeterangan'])->name('stock-opname.update-keterangan');
         Route::put('/stock-opname/update-location-actual/{id}', [App\Http\Controllers\Admin\StockOpnameController::class, 'updateLocationActual'])->name('stock-opname.update-location-actual');
+        Route::delete('/stock-opname/row/{id}', [App\Http\Controllers\Admin\StockOpnameController::class, 'destroyRow'])->name('stock-opname.row.destroy');
         Route::get('/stock-opname/history/{id}', [App\Http\Controllers\Admin\StockOpnameController::class, 'getHistory'])->name('stock-opname.history');
         Route::get('/stock-opname/export/{fileId}', [App\Http\Controllers\Admin\StockOpnameController::class, 'exportData'])->name('stock-opname.export-data');
         Route::delete('/stock-opname/{fileId}', [App\Http\Controllers\Admin\StockOpnameController::class, 'deleteFile'])->name('stock-opname.delete');

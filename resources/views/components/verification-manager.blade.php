@@ -144,7 +144,8 @@
             const errorState = document.getElementById('verification-error-state');
             const loadingMessage = document.getElementById('verification-loading-message');
 
-            // Debug: Log element existence
+            // Debug: Log element existence (safe)
+            console.debug('Verification elements:', {
                 card: !!card,
                 loadingState: !!loadingState,
                 successState: !!successState,
